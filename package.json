@@ -18,5 +18,13 @@
     "web-ifc-three": "^0.0.118",
     "web-ifc-viewer": "^1.0.207"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/goncalogbastos/web-ifc-viewer-module.git"
+  },
+  "bugs": {
+    "url": "https://github.com/goncalogbastos/web-ifc-viewer-module/issues"
+  },
+  "homepage": "https://github.com/goncalogbastos/web-ifc-viewer-module#readme",
   "description": ""
 }

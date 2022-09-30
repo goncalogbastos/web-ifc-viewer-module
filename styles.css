@@ -1,10 +1,11 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     overflow: hidden;
 }
 
@@ -18,7 +19,7 @@ html, body {
 }
 
 
-#file-input{
+#file-input {
     position: absolute;
 }
 
@@ -27,6 +28,8 @@ html, body {
     border: 1px solid gray;
     width: 20rem;
     position: absolute;
+    top: 1rem;
+    right: 1rem;
     background-color: white;
 }
 
@@ -41,4 +44,63 @@ html, body {
 .ifc-property-value {
     width: 100%;
     text-align: right;
+}
+
+
+
+#ifc-tree-menu{
+    position: absolute;
+    overflow-y: scroll;
+    background-color: white;
+    height: 100vh;
+    padding: 1rem;
+}
+
+li, ul{
+    user-select: none;
+    cursor: pointer;
+}
+
+/* Remove default bullets */
+ul,
+#myUL {
+    list-style-type: none;
+}
+
+/* Remove margins and padding from the parent ul */
+#myUL {
+    margin: 0;
+    padding: 0;
+}
+
+/* Style the caret/arrow */
+.caret {
+    cursor: pointer;
+    user-select: none;
+    /* Prevent text selection */
+}
+
+/* Create the caret/arrow with a unicode, and style it */
+.caret::before {
+    content: "\25B6";
+    color: black;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+/* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+.caret-down::before {
+    transform: rotate(90deg);
+}
+
+/* Hide the nested list */
+.nested {
+    display: none;   
+    margin-left: 1.5rem;
+    
+}
+
+/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+.active {
+    display: block;
 }

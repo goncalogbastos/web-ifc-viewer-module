@@ -26,12 +26,11 @@ body {
 .checkboxes{
     border: 1px solid gray;
     position: absolute;
-    bottom: 1rem;
-    right: 1rem;
+    top: 1rem;
+    left: 1rem;
     padding: 0.5rem;
     
 }
-
 
 .ifc-property-menu {
     border: 1px solid gray;
@@ -55,15 +54,15 @@ body {
     text-align: right;
 }
 
-
-
 #ifc-tree-menu{
-    position: absolute;  
-
+    border: 1px solid gray;
+    position: absolute;
     overflow-y: scroll;
     background-color: white;
-    height: 100vh;
-    padding: 1rem;
+    height: 40vh;
+    bottom: 1rem;
+    right: 1rem;
+    padding: 1rem;    
 }
 
 li, ul{

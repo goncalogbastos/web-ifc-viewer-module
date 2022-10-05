@@ -15,8 +15,6 @@ import {
   IFCMEMBER
 } from 'web-ifc';
 
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 // AXES, GRID AND SCENE
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -26,7 +24,6 @@ const viewer = new IfcViewerAPI({ container, backgroundColor: new Color(0xffffff
 viewer.axes.setAxes();
 viewer.grid.setGrid();
 const scene = viewer.context.getScene();
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // IFC LOADING
@@ -38,8 +35,12 @@ loadIfc("./01.ifc");
 let model;
 async function loadIfc(url) {
   model = await viewer.IFC.loadIfcUrl(url);
+  model.removeFromParent();
+  togglePickable(model, false);
+
   await viewer.shadowDropper.renderShadow(model.modelID);
   viewer.context.renderer.postProduction.active = true;
+  setupAllCategories();
 
   const project = await viewer.IFC.getSpatialStructure(model.modelID);
   createTreeMenu(project);
@@ -91,19 +92,38 @@ async function getAll(category) {
   return viewer.IFC.loader.ifcManager.getAllItemsOfType(model.modelID, category);
 }
 
-
-
 const subsets = {};
 
 async function setupAllCategories() {
   const allCategories = Object.values(categories);
   for (const category of allCategories) {
+    setupCategory(category);
 
   }
 }
 
-function setupCategory(category){
-  subsets[category] = await newSubsetOfType(category);
+async function setupCategory(category){
+  const subset = await newSubsetOfType(category);
+  subsets[category] = subset; 
+  togglePickable(subset, true);
+  setupCheckbox(category);
+}
+
+function setupCheckbox(category){
+  const name = getName(category);
+  const checkbox = document.getElementById(name);
+  checkbox.addEventListener('change', () => {
+    const subset = subsets[category];
+    if(checkbox.checked) {
+      scene.add(subset);
+      togglePickable(subset, true);
+    }
+    else {
+      subset.removeFromParent()
+      togglePickable(subset, false)
+    };
+    viewer.context.renderer.postProduction.update();
+  })
 }
 
 async function newSubsetOfType(category) {
@@ -115,6 +135,17 @@ async function newSubsetOfType(category) {
     removePrevious: true,
     customID: category.toString()
   })
+}
+
+function togglePickable(mesh, isPickable){
+  const pickable = viewer.context.items.pickableIfcModels;
+  if(isPickable){
+    pickable.push(mesh);
+  }
+  else{
+    const index = viewer.context.items.pickableIfcModels.indexOf(mesh);
+    pickable.splice(index,1);
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

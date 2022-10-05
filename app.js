@@ -1,42 +1,134 @@
+/////////////////////////////////////////////////////////////////////////////////////////////
+// IMPORT LIBRARIES
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 import { Color } from "three";
 import { IfcViewerAPI } from "web-ifc-viewer";
 import { IFCLoader } from "web-ifc-three";
+import {
+  IFCWALLSTANDARDCASE,
+  IFCSLAB,
+  IFCFURNISHINGELEMENT,
+  IFCDOOR,
+  IFCWINDOW,
+  IFCPLATE,
+  IFCMEMBER
+} from 'web-ifc';
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// AXES, GRID AND SCENE
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 const container = document.getElementById('viewer-container');
 const viewer = new IfcViewerAPI({ container, backgroundColor: new Color(0xffffff) });
-
 viewer.axes.setAxes();
 viewer.grid.setGrid();
+const scene = viewer.context.getScene();
 
 
-// IFC Loading
+/////////////////////////////////////////////////////////////////////////////////////////////
+// IFC LOADING
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 //const loader = new IFCLoader();
 //const input = document.getElementById('file-input');
 loadIfc("./01.ifc");
-
 let model;
-
 async function loadIfc(url) {
   model = await viewer.IFC.loadIfcUrl(url);
   await viewer.shadowDropper.renderShadow(model.modelID);
   viewer.context.renderer.postProduction.active = true;
 
   const project = await viewer.IFC.getSpatialStructure(model.modelID);
-  console.log(project);
   createTreeMenu(project);
 }
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// EVENTS
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+window.onclick = async () => {
+  const result = await viewer.IFC.selector.highlightIfcItem();
+  console.log(result);
+  if (!result) return;
+  const { modelID, id } = result;
+  const props = await viewer.IFC.getProperties(modelID, id, true, false);
+  createPropertiesMenu(props);
+}
+
+window.onmousemove = () => viewer.IFC.selector.prePickIfcItem();
+
+window.ondblclick = () => {
+  viewer.IFC.selector.unHighlightIfcItems();
+  viewer.IFC.selector.unpickIfcItems();
+  removeAllChildren(propsGUI);
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// VISIBILITY (CHECKBOXES)
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+const categories = {
+  IFCWALLSTANDARDCASE,
+  IFCSLAB,
+  IFCFURNISHINGELEMENT,
+  IFCDOOR,
+  IFCWINDOW,
+  IFCPLATE,
+  IFCMEMBER
+}
+
+function getName(category) {
+  const names = Object.keys(categories);
+  return names.find(name => categories[name] === category);
+}
+
+async function getAll(category) {
+  return viewer.IFC.loader.ifcManager.getAllItemsOfType(model.modelID, category);
+}
+
+
+
+const subsets = {};
+
+async function setupAllCategories() {
+  const allCategories = Object.values(categories);
+  for (const category of allCategories) {
+
+  }
+}
+
+function setupCategory(category){
+  subsets[category] = await newSubsetOfType(category);
+}
+
+async function newSubsetOfType(category) {
+  const ids = await getAll(category);
+  return viewer.IFC.loader.ifcManager.createSubset({
+    modelID: model.modelID,
+    scene,
+    ids,
+    removePrevious: true,
+    customID: category.toString()
+  })
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// SPATIAL TREE
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 const toggler = document.getElementsByClassName("caret");
 let i;
-
 for (i = 0; i < toggler.length; i++) {
   toggler[i].addEventListener("click", function () {
     this.parentElement.querySelector(".nested").classList.toggle("active");
     this.classList.toggle("caret-down");
   });
 }
-
-// Spatial tree
 
 function createTreeMenu(ifcProject) {
   const root = document.getElementById("tree-root");
@@ -65,13 +157,15 @@ function createSimpleChild(parent, node) {
   childNode.classList.add('leaf-node');
   childNode.textContent = content;
   parent.appendChild(childNode);
-  console.log(model.modelID);
 
   childNode.onmouseenter = () => {
     viewer.IFC.selector.prepickIfcItemsByID(0, [node.expressID]);
   }
+
   childNode.onclick = async () => {
-    viewer.IFC.selector.pickIfcItemsByID(0, [node.expressID]);
+    viewer.IFC.selector.highlightIfcItemsByID(0, [node.expressID]);
+    const props = await viewer.IFC.getProperties(model.modelID, node.expressID, true, false);
+    createPropertiesMenu(props);
   }
 }
 
@@ -101,28 +195,14 @@ function nodeToString(node) {
   return `${node.type} - ${node.expressID}`;
 }
 
-
-
-// Properties menu
-
-window.onmousemove = () => viewer.IFC.selector.prePickIfcItem();
-window.ondblclick = () => {
-  viewer.IFC.selector.unHighlightIfcItems();
-  removeAllChildren(propsGUI);
-}
-
-window.onclick = async () => {
-  const result = await viewer.IFC.selector.highlightIfcItem();
-  if (!result) return;
-  const { modelID, id } = result;
-  const props = await viewer.IFC.getProperties(modelID, id, true, false);
-  createPropertiesMenu(props);
-}
+/////////////////////////////////////////////////////////////////////////////////////////////
+// PROPERTIES MENU
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 const propsGUI = document.getElementById("ifc-property-menu-root");
 
 function createPropertiesMenu(properties) {
-  console.log(properties);
+  //console.log(properties);
 
   removeAllChildren(propsGUI);
   delete properties.psets;

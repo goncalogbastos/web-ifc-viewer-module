@@ -10,6 +10,7 @@
 </head>
 <body>
     <div id="viewer-container"></div>
+
     <div class="ifc-property-menu">
         <div class="ifc-property-item">
             <div>Key</div>
@@ -18,32 +19,47 @@
         <div id="ifc-property-menu-root"></div>
     </div>
 
+
     <div id="ifc-tree-menu">
         <ul id="myUL">
             <li id="tree-root">
-                <span class="caret">Beverages</span>
-              <ul class="nested">
-                <li>Water</li>
-                <li>Coffee</li>
-                <li><span class="caret">Tea</span>
-                  <ul class="nested">
-                    <li>Black Tea</li>
-                    <li>White Tea</li>
-                    <li><span class="caret">Green Tea</span>
-                      <ul class="nested">
-                        <li>Sencha</li>
-                        <li>Gyokuro</li>
-                        <li>Matcha</li>
-                        <li>Pi Lo Chun</li>
-                      </ul>
-                    </li>
-                  </ul>
-                </li>
-              </ul>
+                <span class="caret">IFC</span>
             </li>
           </ul>
-
     </div>
+
+    <div class="checkboxes">      
+      <div>
+        <input type="checkbox" checked="true" id="IFCWALLSTANDARDCASE">
+        Walls
+      </div>
+      <div>
+        <input type="checkbox" checked="true" id="IFCSLAB">
+        Slabs
+      </div>
+      <div>
+        <input type="checkbox" checked="true" id="IFCFURNISHINGELEMENT">
+        Furniture
+      </div>
+      <div>
+        <input type="checkbox" checked="true" id="IFCDOOR">
+        Doors
+      </div>
+      <div>
+        <input type="checkbox" checked="true" id="IFCWINDOW">
+        Windows
+      </div>
+      <div>
+        <input type="checkbox" checked="true" id="IFCPLATE">
+        Plates
+      </div>
+      <div>
+        <input type="checkbox" checked="true" id="IFCMEMBER">
+        Mullions
+      </div>
+    </div>
+
+
     
     <script src="bundle.js"></script>
 </body>

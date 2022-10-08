@@ -23,13 +23,26 @@ body {
     position: absolute;
 }
 
+#button-container{
+    z-index: 2;
+    border: 1px solid gray;
+    position: absolute;
+    /*margin: 1rem;*/
+    display: flex;
+    flex-direction: column;
+    top: 1rem;
+    left: 10rem;
+    padding: 0.5rem;
+}
+
+
+
 .checkboxes{
     border: 1px solid gray;
     position: absolute;
     top: 1rem;
     left: 1rem;
-    padding: 0.5rem;
-    
+    padding: 0.5rem;    
 }
 
 .ifc-property-menu {

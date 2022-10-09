@@ -2,17 +2,19 @@
 // IMPORT LIBRARIES
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-import { Color, LineBasicMaterial, MeshBasicMaterial } from "three";
+import { Color, LineBasicMaterial, LineLoop, MeshBasicMaterial } from "three";
 import { IfcViewerAPI } from "web-ifc-viewer";
 import { IFCLoader } from "web-ifc-three";
 import {
   IFCWALLSTANDARDCASE,
+  IFCWALL,
   IFCSLAB,
   IFCFURNISHINGELEMENT,
   IFCDOOR,
   IFCWINDOW,
   IFCPLATE,
-  IFCMEMBER
+  IFCMEMBER,
+  IFCCURTAINWALL
 } from 'web-ifc';
 import Drawing from "dxf-writer";
 
@@ -36,7 +38,7 @@ loadIfc("./01.ifc");
 let model;
 let allPlans;
 async function loadIfc(url) {
-  //Load Model
+  //Load Model  
   model = await viewer.IFC.loadIfcUrl(url);
   await viewer.shadowDropper.renderShadow(model.modelID);  
   model.removeFromParent();
@@ -57,8 +59,89 @@ async function loadIfc(url) {
 
   // Annotations
   dimensions();
-  
 
+  // Export Properties
+  //exportProperties();
+
+  // Export IFC to GLTF
+  //exportIFCtoGLTF(url);
+  
+  // Import GLTF  
+  //importGLTF()
+
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// GEOMETRY & PROPERTIES IMPORT
+/////////////////////////////////////////////////////////////////////////////////////////////
+async function importGLTF(){
+  await viewer.GLTF.loadModel('./result/curtainwalls_Nivel 1.glb');
+  await viewer.GLTF.loadModel('./result/slabs_Nivel 1.glb');
+  await viewer.GLTF.loadModel('./result/doors_Nivel 1.glb');
+  await viewer.GLTF.loadModel('./result/slabs_Nivel 2.glb');
+  await viewer.GLTF.loadModel('./result/windows_Nivel 1.glb');
+  await viewer.GLTF.loadModel('./result/walls_Nivel 1.glb');
+
+  const rawProperties = await fetch('/result/properties.json');
+  const properties = await rawProperties.json();
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// GEOMETRY & PROPERTIES EXPORT
+/////////////////////////////////////////////////////////////////////////////////////////////
+async function exportIFCtoGLTF(ifcModel){
+  const result = await viewer.GLTF.exportIfcFileAsGltf({
+    ifcFileUrl: ifcModel,
+    splitByFloors: true,
+    categories: {
+      walls: [IFCWALL,IFCWALLSTANDARDCASE],
+      slabs: [IFCSLAB],
+      windows: [IFCWINDOW],
+      curtainwalls: [IFCMEMBER, IFCPLATE, IFCCURTAINWALL],
+      doors: [IFCDOOR]
+    },
+    getProperties: true
+  })
+
+  const link = document.createElement('a');
+  document.body.appendChild(link);
+
+  for(const categoryName in result.gltf){
+    const category = result.gltf[categoryName];
+    for(const levelName in category){
+      const file = category[levelName].file;
+      if(file){
+        link.download = `${categoryName}_${levelName}.glb`
+        link.href = URL.createObjectURL(file);
+        link.click();        
+      }
+    }
+  }
+
+  for(let jsonFile of result.json){
+    link.download = 'properties.json';
+    link.href = URL.createObjectURL(jsonFile);
+    link.click();
+  }
+  link.remove();
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// PROPERTIES EXPORT
+/////////////////////////////////////////////////////////////////////////////////////////////
+async function exportProperties(){
+  const properties = await viewer.IFC.properties.serializeAllProperties(model);
+  
+  const file = new File(properties, 'properties.json')
+  const link = document.createElement('a');
+  document.body.appendChild(link);
+  link.download = 'properties.json';
+  link.href = URL.createObjectURL(file);
+  link.click();
+  link.remove();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -261,6 +344,7 @@ window.ondblclick = async () => {
 
 const categories = {
   IFCWALLSTANDARDCASE,
+  IFCWALL,
   IFCSLAB,
   IFCFURNISHINGELEMENT,
   IFCDOOR,

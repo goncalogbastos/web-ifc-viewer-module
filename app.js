@@ -42,7 +42,6 @@ async function loadIfc(url) {
   model.removeFromParent();
   togglePickable(model, false);
 
-
   // Categories Checkboxes  
   toggleShadow();
   togglePostProduction(true);
@@ -56,7 +55,47 @@ async function loadIfc(url) {
   await viewer.plans.computeAllPlanViews(model.modelID);
   createFloorPlans();
 
+  // Annotations
+  dimensions();
+  
+
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// ANNOTATIONS - DIMENSIONS
+/////////////////////////////////////////////////////////////////////////////////////////////
+function dimensions(){
+  const containerDimensions = document.getElementById('button-dimensions-container');
+  const button1 = document.createElement('button');
+  const button2 = document.createElement('button');
+  containerDimensions.appendChild(button1);
+  containerDimensions.appendChild(button2);
+  button1.textContent = "Measure";
+  button2.textContent = "Clear";
+  button1.onclick = () => {
+    viewer.dimensions.active = true;
+    viewer.dimensions.previewActive = true;
+  
+    window.ondblclick = () => {
+      viewer.dimensions.create();
+    }
+  
+    window.onkeydown = (event) => {
+      if(event.code === 'Delete'){
+        viewer.dimensions.delete();
+      }
+    }
+  }
+
+  button2.onclick = () => {
+    viewer.dimensions.deleteAll();
+    viewer.dimensions.active = false;
+    viewer.dimensions.previewActive = false;
+    togglePostProduction(true);   
+  }
+} 
+
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,11 +246,13 @@ window.onclick = async () => {
 
 window.onmousemove = () => viewer.IFC.selector.prePickIfcItem();
 
-window.ondblclick = () => {
+
+window.ondblclick = async () => {
   viewer.IFC.selector.unHighlightIfcItems();
   viewer.IFC.selector.unpickIfcItems();
   removeAllChildren(propsGUI);
 }
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////

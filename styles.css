@@ -35,7 +35,33 @@ body {
     padding: 0.5rem;
 }
 
+#button-dimensions-container{
+    z-index: 2;
+    border: 1px solid gray;
+    position: absolute;
+    /*margin: 1rem;*/
+    display: flex;
+    flex-direction: column;
+    top: 1rem;
+    left: 20rem;
+    padding: 0.5rem;
+}
 
+.ifcjs-dimension-preview {
+    width: 1rem;
+    height: 1rem;
+    background-color: #FFA50F;
+    border-radius: 1rem;
+    opacity: 0.5;
+    
+}
+
+.ifcjs-dimension-label {
+    background-color: black;
+    color: white;
+    padding: 4px;
+    border-radius: 4px;
+}
 
 .checkboxes{
     border: 1px solid gray;

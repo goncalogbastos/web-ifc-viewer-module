@@ -14,9 +14,15 @@ import {
   IFCWINDOW,
   IFCPLATE,
   IFCMEMBER,
-  IFCCURTAINWALL
+  IFCCURTAINWALL,  
+  IFCFLOWFITTING,
+  IfcFlowSegment,
+  IFCFLOWSEGMENT,
+  IFCFLOWTERMINAL,
+  IFCBUILDINGELEMENTPROXY
 } from 'web-ifc';
 import Drawing from "dxf-writer";
+import {Dexie} from "dexie";
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // AXES, GRID AND SCENE
@@ -34,6 +40,8 @@ const scene = viewer.context.getScene();
 
 //const loader = new IFCLoader();
 //const input = document.getElementById('file-input');
+
+/*
 loadIfc("./01.ifc");
 let model;
 let allPlans;
@@ -70,6 +78,130 @@ async function loadIfc(url) {
   //importGLTF()
 
 }
+*/
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// FRONTEND DATABASE
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+// Get all buttons
+const saveButton = document.getElementById('save-button');
+const loadButton = document.getElementById('load-button');
+const removeButton = document.getElementById('remove-button');
+const input = document.getElementById("file-input");
+
+// Set up the button logic
+removeButton.onclick = () => removeDatabase();
+loadButton.onclick = () => loadSavedModel();
+saveButton.onclick = () => input.click();
+input.onchange = () => preprocessAndSaveModel();
+
+//Set up what buttons the user can click
+updateButtons();
+
+function updateButtons(){
+  const modelsNames = localStorage.getItem('modelsNames');
+  if(modelsNames){
+    loadButton.classList.remove('disabled');
+    removeButton.classList.remove('disabled');
+    saveButton.classList.add('disabled');
+  }
+  else{
+    loadButton.classList.add('disabled');
+    removeButton.classList.add('disabled');
+    saveButton.classList.remove('disabled');
+  }
+}
+
+// Create a database
+const db = createOrOpenDatabase();
+
+function createOrOpenDatabase(){
+  const db = new Dexie("ModelDataBase");
+  db.version(1).stores({
+    bimModels: `
+    name,
+    id,
+    category,
+    level
+    `
+  })
+  return db;
+}
+
+async function preprocessAndSaveModel(){
+  const file = input.files[0];
+  url = URL.createObjectURL(file);
+
+  const result = await viewer.GLTF.exportIfcFileAsGltf({
+    ifcFileUrl: url,
+    splitByFloors: true,
+    categories: {
+      walls: [IFCWALL,IFCWALLSTANDARDCASE],
+      slabs: [IFCSLAB],
+      windows: [IFCWINDOW],
+      curtainwalls: [IFCMEMBER, IFCPLATE, IFCCURTAINWALL],
+      doors: [IFCDOOR],
+      //pipes: [IFCFLOWFITTING, IFCFLOWSEGMENT, IFCFLOWTERMINAL],
+      //undefined: [IFCBUILDINGELEMENTPROXY]
+    }
+  })
+
+  const models = [];
+
+  for(const categoryName in result.gltf){
+    const category = result.gltf[categoryName];
+    for(const levelName in category){
+      const file = category[levelName].file;
+      if(file){
+        const data = await file.arrayBuffer(); // Converts file to memory - serializing
+        models.push({
+          name: result.id + categoryName + levelName,
+          id: result.id,
+          category: categoryName,
+          file: data
+        })
+      }
+    }
+  }
+
+  await db.bimModels.bulkPut(models);
+  const names = models.map(model => model.name);
+  const serilizedNames = JSON.stringify(names);
+  localStorage.setItem("modelsNames", serilizedNames);
+  location.reload();
+}
+
+async function loadSavedModel(){
+  const serializedNames = localStorage.getItem("modelsNames");
+  const names = JSON.parse(serializedNames);
+
+  console.log(serializedNames);
+  
+  for(const name of names){
+    const savedModel = await db.bimModels.where("name").equals(name).toArray();
+    console.log(savedModel);
+    const data = savedModel[0].file;
+    const file = new File([data], 'example');
+    const url = URL.createObjectURL(file);
+    await viewer.GLTF.loadModel(url);
+  }
+
+  loadButton.classList.add('disabled');
+
+}
+
+function removeDatabase(){
+  localStorage.removeItem("modelsNames");
+  db.delete();
+  location.reload();
+}
+
+
+
+
+
+/*
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // GEOMETRY & PROPERTIES IMPORT
@@ -540,3 +672,5 @@ function removeAllChildren(element) {
     element.removeChild(element.firstChild);
   }
 }
+
+*/

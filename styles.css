@@ -9,6 +9,10 @@ body {
     overflow: hidden;
 }
 
+input{
+    visibility: collapse;
+}
+
 #viewer-container {
     position: fixed;
     top: 0;
@@ -46,6 +50,27 @@ body {
     left: 20rem;
     padding: 0.5rem;
 }
+
+.disabled{
+    opacity: 50%;
+    pointer-events: none;
+}
+
+.button-container{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    left: 1rem;
+    top: 10rem;
+
+}
+
+.button-container button{
+    margin: 0.5rem;
+    padding: 1rem;
+}
+
+
 
 .ifcjs-dimension-preview {
     width: 1rem;

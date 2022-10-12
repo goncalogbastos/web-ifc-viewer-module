@@ -41,14 +41,17 @@ const scene = viewer.context.getScene();
 //const loader = new IFCLoader();
 //const input = document.getElementById('file-input');
 
-/*
+
 loadIfc("./01.ifc");
 let model;
 let allPlans;
 async function loadIfc(url) {
   //Load Model  
   model = await viewer.IFC.loadIfcUrl(url);
-  await viewer.shadowDropper.renderShadow(model.modelID);  
+  await viewer.shadowDropper.renderShadow(model.modelID); 
+  viewer.context.renderer.postProduction.active = active;
+  
+  /*
   model.removeFromParent();
   togglePickable(model, false);
 
@@ -76,10 +79,47 @@ async function loadIfc(url) {
   
   // Import GLTF  
   //importGLTF()
+  */
 
 }
-*/
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+// IFC REPORT
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+const walls = await viewer.IFC.getAllItemsOfType(model.modelID, IFCWALLSTANDARDCASE, true);
+const table = document.getElementById('tbody');
+const body = table.querySelector('tbody');
+for(const wall of walls){
+  createWallNameEntry(body, wall);
+  for(const propertyName in wall){
+    const propertyValue = wall[propertyName];
+  }
+
+}
+
+function createWallNameEntry(table, wall){
+  const row = document.createElement('tr');
+  table.appendChild(row);
+
+  const wallName = document.createElement('td');
+  wallName.colSpan = 2;
+  wallName.textContent = "Wall " + wall.GlobalId.value;
+  row.appendChild(wallName);
+
+  }
+
+function createPropertyEntry(tableBody, name, value){
+    const row = document.createElement('td');
+    tableBody.appendChild(row);
+
+    const propertyName = document.createElement('td');
+  }
+
+
+
+
+/*
 /////////////////////////////////////////////////////////////////////////////////////////////
 // FRONTEND DATABASE
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +236,7 @@ function removeDatabase(){
   db.delete();
   location.reload();
 }
-
+*/
 
 
 

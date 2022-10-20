@@ -1,0 +1,224 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    overflow: hidden;
+}
+
+input{
+    visibility: collapse;
+}
+
+#viewer-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    outline: none;
+    width: 100%;
+    height: 100%;
+}
+
+
+#file-input {
+    position: absolute;
+}
+
+#button-container{
+    z-index: 2;
+    border: 1px solid gray;
+    position: absolute;
+    /*margin: 1rem;*/
+    display: flex;
+    flex-direction: column;
+    top: 1rem;
+    left: 10rem;
+    padding: 0.5rem;
+}
+
+#button-dimensions-container{
+    z-index: 2;
+    border: 1px solid gray;
+    position: absolute;
+    /*margin: 1rem;*/
+    display: flex;
+    flex-direction: column;
+    top: 1rem;
+    left: 20rem;
+    padding: 0.5rem;
+}
+
+button {
+    position: absolute;
+    right: 0;
+}
+
+.table-container {
+    position: absolute;
+    max-height: 1000vh;
+    background-color: white;
+    overflow: scroll;
+}
+
+#walls-table {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    max-width: 30vw;
+}
+
+#walls-table td, #walls-table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#walls-table tr:nth-child(even){background-color: #f2f2f2;}
+
+#walls-table tr:hover {background-color: #ddd;}
+
+#walls-table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+}
+
+#viewer-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    outline: none;
+    width: 100%;
+    height: 100%;
+}
+
+
+.disabled{
+    opacity: 50%;
+    pointer-events: none;
+}
+
+.button-container{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    left: 1rem;
+    top: 10rem;
+
+}
+
+.button-container button{
+    margin: 0.5rem;
+    padding: 1rem;
+}
+
+
+
+.ifcjs-dimension-preview {
+    width: 1rem;
+    height: 1rem;
+    background-color: #FFA50F;
+    border-radius: 1rem;
+    opacity: 0.5;
+    
+}
+
+.ifcjs-dimension-label {
+    background-color: black;
+    color: white;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+.checkboxes{
+    border: 1px solid gray;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    padding: 0.5rem;    
+}
+
+.ifc-property-menu {
+    border: 1px solid gray;
+    width: 20rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: white;
+}
+
+.ifc-property-item {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0.5rem;
+    border-bottom: solid 1px gray;
+}
+
+.ifc-property-value {
+    width: 100%;
+    text-align: right;
+}
+
+#ifc-tree-menu{
+    border: 1px solid gray;
+    position: absolute;
+    overflow-y: scroll;
+    background-color: white;
+    height: 40vh;
+    bottom: 1rem;
+    right: 1rem;
+    padding: 1rem;    
+}
+
+li, ul{
+    user-select: none;
+    cursor: pointer;
+}
+
+/* Remove default bullets */
+ul,
+#myUL {
+    list-style-type: none;
+}
+
+/* Remove margins and padding from the parent ul */
+#myUL {
+    margin: 0;
+    padding: 0;
+}
+
+/* Style the caret/arrow */
+.caret {
+    cursor: pointer;
+    user-select: none;
+    /* Prevent text selection */
+}
+
+/* Create the caret/arrow with a unicode, and style it */
+.caret::before {
+    content: "\25B6";
+    color: black;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+/* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+.caret-down::before {
+    transform: rotate(90deg);
+}
+
+/* Hide the nested list */
+.nested {
+    display: none;   
+    margin-left: 1.5rem;
+    
+}
+
+/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+.active {
+    display: block;
+}
